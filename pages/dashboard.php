@@ -1,8 +1,12 @@
 <?php 
 
-  session_start();
+  // check if user has a role or not
+  if( !Authentication::whoCanAccess('user') ) {
+    header('Location: /login');
+    exit;
+  }
 
-  require "parts/header.php";
+  require dirname(__DIR__) . "/parts/header.php";
 
 
 ?>
@@ -29,6 +33,8 @@
             </div>
           </div>
         </div>
+
+        <?php if ( Authentication::whoCanAccess('admin') ) : ?>
         <div class="col">
           <div class="card mb-2">
             <div class="card-body">
@@ -46,6 +52,8 @@
             </div>
           </div>
         </div>
+        <?php endif; ?>
+
       </div>
       <div class="mt-4 text-center">
         <a href="/home" class="btn btn-link btn-sm"
@@ -57,4 +65,4 @@
 
 <?php
 
-  require "parts/footer.php";
+  require dirname(__DIR__) . "/parts/footer.php";

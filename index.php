@@ -1,11 +1,22 @@
 <?php
 
+  // start session
+  session_start();
+
+  // require all the classes & functions files
+  require "includes/class-db.php";
+  require "includes/class-user.php";
+  require "includes/class-post.php";
+  require "includes/class-authentication.php";
+  require "includes/class-form-validation.php";
+  require "includes/class-csrf.php";
+
   $path = $_SERVER["REQUEST_URI"];
 
-  //  Trim / at the back of the url to avoid switching back to homepage
-  $path = trim( $path , "/" );
+  // get route
+  $path = trim( $_SERVER["REQUEST_URI"], '/' );
 
-  // Removes all URL parameters that starts from '?'
+  // remove query string
   $path = parse_url( $path, PHP_URL_PATH );
 
   switch( $path ) {

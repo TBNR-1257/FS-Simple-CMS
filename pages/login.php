@@ -1,9 +1,67 @@
 <?php 
 
-  session_start();
+  // set CSRF token
+  CSRF::generateToken( 'login_form' );
 
-  require "parts/header.php";
+  // make sure if the user wasn't logged in yet
+  // if the user is already logged in, we'll redirect to dashboard page
+  if ( Authentication::isLoggedIn() )
+  {
+    header('Location: /dashboard');
+    exit;
+  } 
 
+  // process the login form
+  if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Step 1: do error check
+    $error = FormValidation::validate(
+      $_POST,
+      [
+        'email' => 'required',
+        'password' => 'required',
+        // email and password are the key, and required is the condition
+        'csrf_token' => 'login_form_csrf_token'
+      ]
+    );
+
+
+    // make sure there is an error
+    if ( !$error ) {
+
+      // Step 2: login the user
+      $user_id = Authentication::login( $email, $password );
+
+      // if user_id is false,
+      // meaning either email or passwordis incorrect 
+      if ( !$user_id ) {
+
+        // trigger error message
+        $error = 'Email or Password is incorrect';
+
+      } else {
+
+      // step 3: assign the user to $_SESSION['user']
+        Authentication::setSession( $user_id );
+
+      // Step 4: remove csrf token & redirect the user to dashboard
+        // 4.1: remove csrf token
+        CSRF::removeToken( 'login_form' );
+
+        // 4.2: redirect to dashboard
+        header('Location: /dashboard');
+        exit;
+
+      }
+       
+    }
+
+  }
+
+  require dirname(__DIR__) . "/parts/header.php";
 
 ?>
 
@@ -13,13 +71,15 @@
       <h1 class="h1 mb-4 text-center">Login</h1>
 
       <div class="card p-4">
-        <form method="GET" action="/dashboard">
+      <?php require dirname(__DIR__) . '/parts/error_box.php'; ?>
+        <form method="POST" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
           <div class="mb-2">
             <label for="email" class="visually-hidden">Email</label>
             <input
               type="text"
               class="form-control"
               id="email"
+              name="email"
               placeholder="email@example.com"
             />
           </div>
@@ -29,12 +89,18 @@
               type="password"
               class="form-control"
               id="password"
+              name="password"
               placeholder="Password"
             />
           </div>
           <div class="d-grid">
             <button type="submit" class="btn btn-primary">Login</button>
           </div>
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="<?php echo CSRF::getToken( 'login_form' ); ?>"
+            />
         </form>
       </div>
 
@@ -55,4 +121,4 @@
 
 <?php
 
-  require "parts/footer.php";
+  require dirname(__DIR__) . "/parts/footer.php";
