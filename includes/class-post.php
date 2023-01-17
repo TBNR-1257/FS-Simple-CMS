@@ -23,8 +23,22 @@ class Post
     }
 
 
+     // retrieve all the published posts
+     public static function getPublishPosts()
+     {
+        return DB::connect()->select(
+            'SELECT * FROM posts WHERE status = :status ORDER BY id DESC',
+            [
+                'status' => 'publish'
+            ],
+            true
+        );
+     }
+
+
+
     // add new post
-    public static function add( $title, $content )
+    public static function add( $title, $content, $user_id )
     {
         return DB::connect()->insert(
             'INSERT INTO posts (title , content , user_id ) 
@@ -65,5 +79,7 @@ class Post
             ]
         );
     }
+
+
 
 }

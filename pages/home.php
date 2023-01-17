@@ -15,14 +15,14 @@
   <body>
     <div class="container mx-auto my-5" style="max-width: 500px;">
       <h1 class="h1 mb-4 text-center">My Blog</h1>
-      <?php foreach( Post::getAllPosts() as $post ) : ?>
+      <?php foreach( Post::getPublishPosts() as $post ) : ?>
         <?php if( Authentication::whoCanAccess('editor') || $_SESSION['user']['id'] == $post->user_id ) : ?>
       <div class="card mb-2">
         <div class="card-body">
           <h5 class="card-title"><?php echo $post->title ?></h5>
-          <p class="card-text"><?php echo $post->content ?></p>
+          <p class="card-text"><?php echo substr( $post->content, 0, 50 ); ?></p>
           <div class="text-end">
-            <a href="/post" class="btn btn-primary btn-sm">Read More</a>
+            <a href="/post?id=<?php echo $post->id; ?>" class="btn btn-primary btn-sm">Read More</a>
           </div>
         </div>
       </div>

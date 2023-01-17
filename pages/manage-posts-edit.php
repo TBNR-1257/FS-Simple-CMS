@@ -77,9 +77,7 @@
           </div>
           <div class="mb-3">
             <label for="post-content" class="form-label">Content</label>
-            <textarea class="form-control" id="post-content" name="content" rows="10">
-            <?php echo $post->content ?>
-            </textarea>
+            <textarea class="form-control" id="post-content" name="content" rows="10"><?php echo $post->content ?></textarea>
           </div>
           <div class="mb-3">
             <label for="post-content" class="form-label">Status</label>
